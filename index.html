@@ -4,10 +4,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SaltyMC Server Status</title>
+    <title>SaltyMC</title>
     <meta
       name="description"
-      content="Live status page for SaltyMC including online state, player count, version, MOTD, daily message, and online players when available."
+      content="SaltyMC official landing page with live status, quick join, events, store highlights, daily message, and Discord."
     />
 
     <!-- Pixel font -->
@@ -19,90 +19,115 @@
     />
 
     <link rel="stylesheet" href="styles.css" />
+
+    <!-- Optional analytics (enable in scripts.js) -->
+    <script>
+      window.__SALTYMC_DISABLE_ANALYTICS__ = true;
+    </script>
   </head>
 
   <body>
-    <!-- Subtle particle background -->
     <canvas id="particles" aria-hidden="true"></canvas>
 
     <header class="site-header">
       <div class="container">
-        <h1 class="title">SaltyMC</h1>
-        <p class="subtitle">Live server status and quick connect info</p>
+        <div class="hero">
+          <div class="hero-left">
+            <h1 class="title">SaltyMC</h1>
+            <p class="subtitle">
+              Survive. Build. Dominate. Jump in fast, bring friends, and have fun.
+            </p>
 
-        <div class="action-row" aria-label="Quick links">
-          <button class="btn btn-discord" id="joinDiscordBtn" type="button">
-            Join Discord
-          </button>
-          <button class="btn btn-secondary" id="copyDiscordBtn" type="button">
-            Copy Discord
-          </button>
+            <div class="hero-cta">
+              <button class="btn btn-primary" id="playNowBtn" type="button">
+                Play Now
+              </button>
+              <button class="btn btn-secondary" id="copyAddressBtn" type="button">
+                Copy IP
+              </button>
+              <button class="btn btn-discord" id="joinDiscordBtn" type="button">
+                Join Discord
+              </button>
+            </div>
+
+            <div class="hero-meta" aria-label="Quick info">
+              <div class="meta-chip">
+                <span class="meta-label">IP</span>
+                <span class="meta-value mono" id="serverAddressInline">play.saltymc.org</span>
+              </div>
+              <div class="meta-chip">
+                <span class="meta-label">Players</span>
+                <span class="meta-value">
+                  <span class="mono" id="playersOnlineInline">0</span>
+                  <span class="muted"> / </span>
+                  <span class="mono" id="playersMaxInline">0</span>
+                </span>
+              </div>
+              <div class="meta-chip">
+                <span class="meta-label">Status</span>
+                <span class="meta-value" id="statusTextInline">Checking…</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-right">
+            <div class="hero-card">
+              <div class="hero-card-top">
+                <h2 class="hero-card-title">Live Status</h2>
+                <div class="status-pill" id="statusPill" aria-live="polite">
+                  <span class="dot" aria-hidden="true"></span>
+                  <span id="statusText">Checking…</span>
+                </div>
+              </div>
+
+              <div class="hero-grid">
+                <div class="hero-stat">
+                  <div class="label">Version</div>
+                  <div class="value" id="serverVersion">Unknown</div>
+                </div>
+                <div class="hero-stat">
+                  <div class="label">Last Updated</div>
+                  <div class="value mono" id="lastUpdated">—</div>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="motd">
+                <div class="label">MOTD</div>
+                <p class="motd-text" id="motd">—</p>
+              </div>
+
+              <p class="error" id="errorBox" role="alert" hidden></p>
+            </div>
+          </div>
         </div>
       </div>
     </header>
 
     <main class="container">
-      <!-- Status Card -->
-      <section class="card" aria-labelledby="status-heading">
-        <div class="card-header">
-          <h2 id="status-heading">Server Status</h2>
-
-          <div class="status-pill" id="statusPill" aria-live="polite">
-            <span class="dot" aria-hidden="true"></span>
-            <span id="statusText">Checking…</span>
+      <!-- Event banner (auto hides if not configured) -->
+      <section class="card banner" id="eventCard" aria-labelledby="eventTitle" hidden>
+        <div class="banner-left">
+          <h2 id="eventTitle">Event</h2>
+          <p class="banner-text" id="eventText">—</p>
+          <div class="banner-meta">
+            <span class="badge" id="eventBadge">Live</span>
+            <span class="muted small" id="eventSubtext">—</span>
           </div>
         </div>
-
-        <div class="grid">
-          <div class="stat">
-            <div class="label">Address</div>
-            <div class="value mono" id="serverAddress">play.saltymc.org</div>
-
-            <div class="btn-row">
-              <button class="btn btn-secondary" id="copyAddressBtn" type="button">
-                Copy address
-              </button>
-            </div>
-
-            <div class="hint">Tip: Use the address above. IPs can change.</div>
+        <div class="banner-right">
+          <div class="countdown" id="countdownWrap" hidden>
+            <div class="countdown-label">Starts in</div>
+            <div class="countdown-value mono" id="countdownText">—</div>
           </div>
-
-          <div class="stat">
-            <div class="label">Players</div>
-            <div class="value">
-              <span class="big" id="playersOnline">0</span>
-              <span class="muted"> / </span>
-              <span class="muted" id="playersMax">0</span>
-            </div>
-            <div class="hint" id="playersHint">Waiting for update…</div>
-          </div>
-
-          <div class="stat">
-            <div class="label">Version</div>
-            <div class="value" id="serverVersion">Unknown</div>
-            <div class="hint">Java or Bedrock supported</div>
-          </div>
-
-          <div class="stat">
-            <div class="label">Last Updated</div>
-            <div class="value mono" id="lastUpdated">—</div>
-            <div class="hint">
-              Auto refresh every <span id="refreshSeconds">30</span> seconds
-            </div>
-          </div>
+          <a class="btn btn-primary" id="eventCtaBtn" href="#" target="_blank" rel="noopener noreferrer">
+            Learn More
+          </a>
         </div>
-
-        <div class="divider"></div>
-
-        <div class="motd">
-          <div class="label">Message of the Day</div>
-          <p class="motd-text" id="motd">—</p>
-        </div>
-
-        <p class="error" id="errorBox" role="alert" hidden></p>
       </section>
 
-      <!-- Daily Message Card -->
+      <!-- Daily message -->
       <section class="card" aria-labelledby="daily-heading">
         <div class="card-header">
           <h2 id="daily-heading">Daily Message</h2>
@@ -111,35 +136,88 @@
 
         <p class="daily-text" id="dailyMessage">Loading daily message…</p>
 
-        <div class="hint" id="dailyHint">
-          This message is set by the site owner and can change daily.
+        <div class="hint">
+          Tip: This can be owner editable via a JSON file later.
         </div>
       </section>
 
-      <!-- Online Players Card (auto hides if player list not available) -->
-      <section class="card" id="playersCard" aria-labelledby="players-heading">
+      <!-- Store highlights -->
+      <section class="card" aria-labelledby="store-heading">
+        <div class="card-header">
+          <h2 id="store-heading">Store Highlights</h2>
+          <a class="btn btn-secondary btn-link" id="openStoreBtn" href="#" target="_blank" rel="noopener noreferrer">
+            Open Store
+          </a>
+        </div>
+
+        <div class="store-grid" id="storeGrid">
+          <!-- cards injected by scripts.js -->
+        </div>
+
+        <div class="hint" id="storeHint">
+          These are featured packages. The owner can change them anytime.
+        </div>
+      </section>
+
+      <!-- Screenshots gallery -->
+      <section class="card" aria-labelledby="gallery-heading">
+        <div class="card-header">
+          <h2 id="gallery-heading">Server Gallery</h2>
+          <span class="badge">New</span>
+        </div>
+
+        <div class="gallery" id="gallery">
+          <!-- items injected by scripts.js -->
+        </div>
+
+        <p class="small muted">
+          Replace the image links in scripts.js with real screenshots for maximum hype.
+        </p>
+      </section>
+
+      <!-- Online Players (collapses if not available) -->
+      <section class="card" id="playersCard" aria-labelledby="players-heading" hidden>
         <div class="card-header">
           <h2 id="players-heading">Online Players</h2>
           <span class="badge" id="playersBadge">Live</span>
         </div>
 
-        <div class="player-list" id="playerList" aria-live="polite">
-          <p class="muted small" id="playerListStatus">Checking player list…</p>
+        <div class="player-list" id="playerList" aria-live="polite"></div>
+      </section>
+
+      <!-- Discord embed -->
+      <section class="card" aria-labelledby="discord-heading">
+        <div class="card-header">
+          <h2 id="discord-heading">Discord</h2>
+          <div class="btn-row">
+            <button class="btn btn-discord" id="joinDiscordBtn2" type="button">Join Discord</button>
+            <button class="btn btn-secondary" id="copyDiscordBtn" type="button">Copy Invite</button>
+          </div>
         </div>
 
-        <p class="small muted" id="playerListNote">
-          Player names appear only if the server shares them publicly.
+        <div class="discord-embed">
+          <iframe
+            id="discordWidget"
+            title="SaltyMC Discord"
+            loading="lazy"
+            referrerpolicy="no-referrer"
+            allowtransparency="true"
+          ></iframe>
+        </div>
+
+        <p class="small muted">
+          If the widget is blank, the server may have embeds disabled or the widget link is not set.
         </p>
       </section>
 
-      <!-- How to Join Card -->
+      <!-- How to join -->
       <section class="card" aria-labelledby="howto-heading">
         <h2 id="howto-heading">How to Join</h2>
         <ol class="steps">
           <li>Open Minecraft</li>
           <li>Go to Multiplayer</li>
           <li>Select Add Server</li>
-          <li>Address: <span class="mono">play.saltymc.org</span></li>
+          <li>Server address: <span class="mono">play.saltymc.org</span></li>
           <li>Join and have fun</li>
         </ol>
 
@@ -151,7 +229,9 @@
 
     <footer class="site-footer">
       <div class="container">
-        <p class="small muted">Powered by mcsrvstat.us API.</p>
+        <p class="small muted">
+          Built for SaltyMC. Powered by mcsrvstat.us API.
+        </p>
       </div>
     </footer>
 

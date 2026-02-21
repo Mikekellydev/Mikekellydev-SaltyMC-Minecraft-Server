@@ -1,64 +1,144 @@
 // scripts.js
 
-const SERVER_ADDRESS = "play.saltymc.org";
-const REFRESH_SECONDS = 30;
+const CONFIG = {
+  serverAddress: "play.saltymc.org",
+  refreshSeconds: 30,
 
-// Replace this with the real invite when you have it
-const DISCORD_URL = "https://discord.gg/saltymc";
+  discordInviteUrl: "https://discord.gg/saltymc",
+  // Discord widget format:
+  // https://discord.com/widget?id=YOUR_SERVER_ID&theme=dark
+  // The server owner must enable Server Widget in Discord settings.
+  discordWidgetUrl: "",
 
-// Daily messages (simple starter version)
-// Later upgrade: load from daily-message.json on GitHub Pages.
-const DAILY_MESSAGES = [
-  "Welcome to SaltyMC. Play fair, have fun, and help new players.",
-  "Daily challenge: invite one friend and build something together.",
-  "Pro tip: store valuables safely and label your chests.",
-  "Team up today. Solo is fine, but squads are legendary.",
-  "Be a builder, not a breaker. Respect the community.",
-];
+  tebexStoreUrl: "https://store.saltymc.org",
 
-const API_URL = `https://api.mcsrvstat.us/2/${encodeURIComponent(SERVER_ADDRESS)}`;
+  featuredPackages: [
+    {
+      title: "VIP Rank",
+      priceText: "$9.99",
+      description: "Extra perks, special chat tag, and quality of life boosts.",
+      buyUrl: "https://store.saltymc.org",
+    },
+    {
+      title: "Starter Bundle",
+      priceText: "$4.99",
+      description: "A small boost to help you get rolling fast.",
+      buyUrl: "https://store.saltymc.org",
+    },
+    {
+      title: "Support the Server",
+      priceText: "Any amount",
+      description: "Help cover hosting and upgrades. Thank you.",
+      buyUrl: "https://store.saltymc.org",
+    },
+  ],
 
-// Elements
-const serverAddressEl = document.getElementById("serverAddress");
-const copyAddressBtn = document.getElementById("copyAddressBtn");
+  galleryItems: [
+    {
+      title: "Spawn",
+      description: "The first impression. Make it legendary.",
+      imageUrl: "https://images.unsplash.com/photo-1520975916090-3105956dac38?auto=format&fit=crop&w=1200&q=60",
+    },
+    {
+      title: "Arena",
+      description: "PvP battles, events, and bragging rights.",
+      imageUrl: "https://images.unsplash.com/photo-1542751110-97427bbecf23?auto=format&fit=crop&w=1200&q=60",
+    },
+    {
+      title: "Builds",
+      description: "Community builds that keep growing.",
+      imageUrl: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=1200&q=60",
+    },
+  ],
 
-const joinDiscordBtn = document.getElementById("joinDiscordBtn");
-const copyDiscordBtn = document.getElementById("copyDiscordBtn");
+  // Optional event banner
+  // startsAtISO can be blank to hide countdown
+  event: {
+    enabled: false,
+    title: "Double Rewards Weekend",
+    text: "Earn extra rewards all weekend. Bring your squad.",
+    subtext: "Limited time event",
+    startsAtISO: "",
+    ctaText: "Learn More",
+    ctaUrl: "https://store.saltymc.org",
+  },
 
+  dailyMessages: [
+    "Welcome to SaltyMC. Play fair, have fun, and help new players.",
+    "Daily challenge: invite one friend and build something together.",
+    "Pro tip: store valuables safely and label your chests.",
+    "Team up today. Solo is fine, but squads are legendary.",
+    "Be a builder, not a breaker. Respect the community.",
+  ],
+};
+
+const API_URL = `https://api.mcsrvstat.us/2/${encodeURIComponent(CONFIG.serverAddress)}`;
+
+/* Elements */
 const statusPill = document.getElementById("statusPill");
 const statusText = document.getElementById("statusText");
-
-const playersOnlineEl = document.getElementById("playersOnline");
-const playersMaxEl = document.getElementById("playersMax");
-const playersHintEl = document.getElementById("playersHint");
+const statusTextInline = document.getElementById("statusTextInline");
 
 const serverVersionEl = document.getElementById("serverVersion");
-const motdEl = document.getElementById("motd");
-
 const lastUpdatedEl = document.getElementById("lastUpdated");
-const refreshSecondsEl = document.getElementById("refreshSeconds");
-
+const motdEl = document.getElementById("motd");
 const errorBox = document.getElementById("errorBox");
 
-// Daily message elements
+const serverAddressInline = document.getElementById("serverAddressInline");
+const playersOnlineInline = document.getElementById("playersOnlineInline");
+const playersMaxInline = document.getElementById("playersMaxInline");
+
+const playNowBtn = document.getElementById("playNowBtn");
+const copyAddressBtn = document.getElementById("copyAddressBtn");
+const joinDiscordBtn = document.getElementById("joinDiscordBtn");
+const joinDiscordBtn2 = document.getElementById("joinDiscordBtn2");
+const copyDiscordBtn = document.getElementById("copyDiscordBtn");
+
 const dailyMessageEl = document.getElementById("dailyMessage");
 const dailyBadgeEl = document.getElementById("dailyBadge");
 
-// Player list elements
+const storeGrid = document.getElementById("storeGrid");
+const openStoreBtn = document.getElementById("openStoreBtn");
+
+const galleryEl = document.getElementById("gallery");
+
 const playersCardEl = document.getElementById("playersCard");
 const playerListEl = document.getElementById("playerList");
-const playerListStatusEl = document.getElementById("playerListStatus");
 
-serverAddressEl.textContent = SERVER_ADDRESS;
-refreshSecondsEl.textContent = String(REFRESH_SECONDS);
+const discordWidget = document.getElementById("discordWidget");
 
-// Clipboard helper
+const eventCard = document.getElementById("eventCard");
+const eventTitle = document.getElementById("eventTitle");
+const eventText = document.getElementById("eventText");
+const eventSubtext = document.getElementById("eventSubtext");
+const eventBadge = document.getElementById("eventBadge");
+const eventCtaBtn = document.getElementById("eventCtaBtn");
+const countdownWrap = document.getElementById("countdownWrap");
+const countdownText = document.getElementById("countdownText");
+
+/* Init static UI */
+serverAddressInline.textContent = CONFIG.serverAddress;
+
+if (openStoreBtn) {
+  openStoreBtn.href = CONFIG.tebexStoreUrl;
+}
+
+/* Analytics helper */
+function track(name, props = {}) {
+  if (window.__SALTYMC_DISABLE_ANALYTICS__ === true) return;
+  // Placeholder for analytics hooks.
+  // You can wire Google Analytics, Plausible, or Umami here later.
+  // console.log("track", name, props);
+}
+
+/* Clipboard helper */
 async function copyText(btn, text, successLabel, failLabel) {
   try {
     await navigator.clipboard.writeText(text);
     const original = btn.textContent;
     btn.textContent = successLabel;
     setTimeout(() => (btn.textContent = original), 900);
+    track("copy", { what: successLabel });
   } catch {
     const original = btn.textContent;
     btn.textContent = failLabel;
@@ -66,19 +146,211 @@ async function copyText(btn, text, successLabel, failLabel) {
   }
 }
 
-copyAddressBtn.addEventListener("click", () =>
-  copyText(copyAddressBtn, SERVER_ADDRESS, "Copied", "Copy failed")
-);
+/* Buttons */
+if (copyAddressBtn) {
+  copyAddressBtn.addEventListener("click", () =>
+    copyText(copyAddressBtn, CONFIG.serverAddress, "Copied", "Copy failed")
+  );
+}
 
-joinDiscordBtn.addEventListener("click", () => {
-  window.open(DISCORD_URL, "_blank", "noopener,noreferrer");
-});
+if (playNowBtn) {
+  playNowBtn.addEventListener("click", async () => {
+    await copyText(playNowBtn, CONFIG.serverAddress, "Copied. Paste into Minecraft", "Copy failed");
+    track("cta_play_now");
+  });
+}
 
-copyDiscordBtn.addEventListener("click", () =>
-  copyText(copyDiscordBtn, DISCORD_URL, "Copied", "Copy failed")
-);
+function openDiscord() {
+  window.open(CONFIG.discordInviteUrl, "_blank", "noopener,noreferrer");
+  track("cta_discord");
+}
 
-// Status UI
+if (joinDiscordBtn) joinDiscordBtn.addEventListener("click", openDiscord);
+if (joinDiscordBtn2) joinDiscordBtn2.addEventListener("click", openDiscord);
+
+if (copyDiscordBtn) {
+  copyDiscordBtn.addEventListener("click", () =>
+    copyText(copyDiscordBtn, CONFIG.discordInviteUrl, "Copied", "Copy failed")
+  );
+}
+
+/* Event banner */
+function initEventBanner() {
+  if (!CONFIG.event || CONFIG.event.enabled !== true) {
+    if (eventCard) eventCard.hidden = true;
+    return;
+  }
+
+  eventCard.hidden = false;
+  eventTitle.textContent = CONFIG.event.title || "Event";
+  eventText.textContent = CONFIG.event.text || "";
+  eventSubtext.textContent = CONFIG.event.subtext || "";
+  eventBadge.textContent = "Event";
+  eventCtaBtn.textContent = CONFIG.event.ctaText || "Learn More";
+  eventCtaBtn.href = CONFIG.event.ctaUrl || CONFIG.tebexStoreUrl;
+
+  const startsAt = CONFIG.event.startsAtISO ? new Date(CONFIG.event.startsAtISO) : null;
+  if (!startsAt || Number.isNaN(startsAt.getTime())) {
+    countdownWrap.hidden = true;
+    return;
+  }
+
+  countdownWrap.hidden = false;
+
+  function tick() {
+    const now = new Date();
+    const diff = startsAt.getTime() - now.getTime();
+    if (diff <= 0) {
+      countdownText.textContent = "Now";
+      return;
+    }
+
+    const totalSeconds = Math.floor(diff / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const mins = Math.floor((totalSeconds % 3600) / 60);
+
+    const parts = [];
+    if (days > 0) parts.push(`${days}d`);
+    parts.push(`${hours}h`);
+    parts.push(`${mins}m`);
+    countdownText.textContent = parts.join(" ");
+  }
+
+  tick();
+  setInterval(tick, 20000);
+}
+
+initEventBanner();
+
+/* Store cards */
+function renderStoreCards() {
+  if (!storeGrid) return;
+
+  storeGrid.innerHTML = "";
+  for (const pkg of CONFIG.featuredPackages) {
+    const card = document.createElement("div");
+    card.className = "store-card";
+
+    const title = document.createElement("h3");
+    title.className = "store-title";
+    title.textContent = pkg.title;
+
+    const desc = document.createElement("p");
+    desc.className = "store-desc";
+    desc.textContent = pkg.description;
+
+    const price = document.createElement("div");
+    price.className = "store-price";
+    price.textContent = pkg.priceText;
+
+    const actions = document.createElement("div");
+    actions.className = "store-actions";
+
+    const buy = document.createElement("a");
+    buy.className = "btn btn-primary btn-link";
+    buy.href = pkg.buyUrl || CONFIG.tebexStoreUrl;
+    buy.target = "_blank";
+    buy.rel = "noopener noreferrer";
+    buy.textContent = "Buy";
+
+    buy.addEventListener("click", () => track("store_click", { item: pkg.title }));
+
+    const view = document.createElement("a");
+    view.className = "btn btn-secondary btn-link";
+    view.href = CONFIG.tebexStoreUrl;
+    view.target = "_blank";
+    view.rel = "noopener noreferrer";
+    view.textContent = "View Store";
+
+    view.addEventListener("click", () => track("store_open"));
+
+    actions.appendChild(buy);
+    actions.appendChild(view);
+
+    card.appendChild(title);
+    card.appendChild(desc);
+    card.appendChild(price);
+    card.appendChild(actions);
+
+    storeGrid.appendChild(card);
+  }
+}
+
+renderStoreCards();
+
+/* Gallery */
+function renderGallery() {
+  if (!galleryEl) return;
+
+  galleryEl.innerHTML = "";
+  for (const item of CONFIG.galleryItems) {
+    const wrap = document.createElement("div");
+    wrap.className = "gallery-item";
+
+    const img = document.createElement("img");
+    img.className = "gallery-img";
+    img.src = item.imageUrl;
+    img.alt = item.title;
+
+    const cap = document.createElement("div");
+    cap.className = "gallery-cap";
+
+    const t = document.createElement("p");
+    t.className = "gallery-title";
+    t.textContent = item.title;
+
+    const sub = document.createElement("p");
+    sub.className = "gallery-sub";
+    sub.textContent = item.description;
+
+    cap.appendChild(t);
+    cap.appendChild(sub);
+
+    wrap.appendChild(img);
+    wrap.appendChild(cap);
+
+    galleryEl.appendChild(wrap);
+  }
+}
+
+renderGallery();
+
+/* Discord widget */
+function initDiscordWidget() {
+  if (!discordWidget) return;
+
+  if (!CONFIG.discordWidgetUrl) {
+    discordWidget.srcdoc = `
+      <html>
+        <body style="margin:0;background:rgba(0,0,0,0.22);color:white;font-family:system-ui;padding:16px">
+          <div style="font-weight:800">Discord widget not set</div>
+          <div style="opacity:0.8;margin-top:10px;line-height:1.6">
+            Ask the owner for the Discord Server ID and enable Server Widget.
+          </div>
+        </body>
+      </html>
+    `;
+    return;
+  }
+
+  discordWidget.src = CONFIG.discordWidgetUrl;
+}
+
+initDiscordWidget();
+
+/* Daily message */
+function setDailyMessage() {
+  const today = new Date();
+  const dayKey = Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / 86400000);
+  const msg = CONFIG.dailyMessages[dayKey % CONFIG.dailyMessages.length];
+  dailyMessageEl.textContent = msg;
+  dailyBadgeEl.textContent = today.toLocaleDateString(undefined, { weekday: "long" });
+}
+
+setDailyMessage();
+
+/* Status UI helpers */
 function setOnlineUI(isOnline) {
   statusPill.classList.remove("status-online", "status-offline");
   if (isOnline === true) statusPill.classList.add("status-online");
@@ -113,7 +385,7 @@ function safeGetMotd(data) {
   return "—";
 }
 
-// Animated counter
+/* Animated counter */
 function animateNumber(el, from, to, durationMs = 650) {
   const start = performance.now();
   const diff = to - from;
@@ -130,22 +402,9 @@ function animateNumber(el, from, to, durationMs = 650) {
 }
 
 let lastPlayersOnline = 0;
+let lastPlayersMax = 0;
 
-// Daily message
-function setDailyMessage() {
-  const today = new Date();
-  const dayKey = Math.floor(
-    Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / 86400000
-  );
-  const msg = DAILY_MESSAGES[dayKey % DAILY_MESSAGES.length];
-  dailyMessageEl.textContent = msg;
-
-  dailyBadgeEl.textContent = today.toLocaleDateString(undefined, { weekday: "long" });
-}
-
-setDailyMessage();
-
-// Player list extraction and rendering
+/* Player list extraction */
 function extractPlayerNames(data) {
   const list = data?.players?.list;
   if (Array.isArray(list) && list.length) return list;
@@ -162,37 +421,27 @@ function extractPlayerNames(data) {
 }
 
 function renderPlayerList(names) {
-  // If server does not share names, collapse the entire section.
   if (!Array.isArray(names) || names.length === 0) {
-    if (playersCardEl) playersCardEl.hidden = true;
+    playersCardEl.hidden = true;
     return;
   }
 
-  if (playersCardEl) playersCardEl.hidden = false;
-
+  playersCardEl.hidden = false;
   playerListEl.innerHTML = "";
+
   for (const name of names.slice(0, 40)) {
     const chip = document.createElement("span");
     chip.className = "player-chip";
     chip.textContent = name;
     playerListEl.appendChild(chip);
   }
-
-  if (names.length > 40) {
-    const more = document.createElement("p");
-    more.className = "player-empty";
-    more.textContent = `Plus ${names.length - 40} more…`;
-    playerListEl.appendChild(more);
-  }
-
-  if (playerListStatusEl) {
-    playerListStatusEl.textContent = `Showing ${names.length} player name(s)`;
-  }
 }
 
+/* Refresh status */
 async function refreshStatus() {
   setError("");
   statusText.textContent = "Checking…";
+  if (statusTextInline) statusTextInline.textContent = "Checking…";
   setOnlineUI(null);
 
   try {
@@ -204,42 +453,38 @@ async function refreshStatus() {
 
     setOnlineUI(online);
     statusText.textContent = online ? "Online" : "Offline";
+    if (statusTextInline) statusTextInline.textContent = online ? "Online" : "Offline";
 
     const playersOnline = data?.players?.online ?? 0;
     const playersMax = data?.players?.max ?? 0;
 
-    animateNumber(playersOnlineEl, lastPlayersOnline, playersOnline);
+    animateNumber(playersOnlineInline, lastPlayersOnline, playersOnline);
     lastPlayersOnline = playersOnline;
 
-    playersMaxEl.textContent = playersMax > 500 ? "∞" : String(playersMax);
-
-    playersHintEl.textContent = online
-      ? playersMax > 0
-        ? "Server is accepting players"
-        : "Server is online"
-      : "Server is offline or not reachable";
+    const displayMax = playersMax > 500 ? "∞" : String(playersMax);
+    if (playersMaxInline) playersMaxInline.textContent = displayMax;
+    lastPlayersMax = playersMax;
 
     serverVersionEl.textContent = data?.version || "Unknown";
     motdEl.textContent = safeGetMotd(data);
-
     lastUpdatedEl.textContent = formatTime(new Date());
 
-    // Gamer tags: show if available, otherwise collapse card completely.
     const names = online ? extractPlayerNames(data) : [];
     renderPlayerList(names);
   } catch (err) {
     setOnlineUI(false);
     statusText.textContent = "Offline";
+    if (statusTextInline) statusTextInline.textContent = "Offline";
 
-    animateNumber(playersOnlineEl, lastPlayersOnline, 0);
+    animateNumber(playersOnlineInline, lastPlayersOnline, 0);
     lastPlayersOnline = 0;
 
-    playersMaxEl.textContent = "0";
+    if (playersMaxInline) playersMaxInline.textContent = "0";
+
     serverVersionEl.textContent = "Unknown";
     motdEl.textContent = "—";
     lastUpdatedEl.textContent = formatTime(new Date());
 
-    // On error, collapse player list card too.
     if (playersCardEl) playersCardEl.hidden = true;
 
     setError(`Status check failed: ${String(err?.message ?? err)}`);
@@ -247,9 +492,9 @@ async function refreshStatus() {
 }
 
 refreshStatus();
-setInterval(refreshStatus, REFRESH_SECONDS * 1000);
+setInterval(refreshStatus, CONFIG.refreshSeconds * 1000);
 
-// Subtle particle background
+/* Subtle particle background */
 (function particles() {
   const canvas = document.getElementById("particles");
   if (!canvas) return;
@@ -273,14 +518,14 @@ setInterval(refreshStatus, REFRESH_SECONDS * 1000);
   window.addEventListener("resize", resize);
   resize();
 
-  const COUNT = Math.max(40, Math.min(90, Math.floor((w * h) / 18000)));
+  const COUNT = Math.max(40, Math.min(95, Math.floor((w * h) / 18000)));
   const parts = Array.from({ length: COUNT }, () => ({
     x: Math.random() * w,
     y: Math.random() * h,
     r: 1 + Math.random() * 2,
-    vx: -0.2 + Math.random() * 0.4,
-    vy: -0.2 + Math.random() * 0.4,
-    a: 0.10 + Math.random() * 0.18,
+    vx: -0.18 + Math.random() * 0.36,
+    vy: -0.18 + Math.random() * 0.36,
+    a: 0.08 + Math.random() * 0.16,
   }));
 
   function step() {
