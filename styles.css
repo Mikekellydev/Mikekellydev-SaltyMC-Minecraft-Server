@@ -1,0 +1,353 @@
+/* styles.css */
+:root {
+  --bg1: #0b1220;
+  --bg2: #13213a;
+
+  --panel: rgba(255, 255, 255, 0.10);
+  --border: rgba(255, 255, 255, 0.18);
+
+  --accent: #4ade80;
+  --accent2: #38bdf8;
+
+  --danger: #ef4444;
+  --warning: #facc15;
+
+  --text: #ffffff;
+  --muted: rgba(255, 255, 255, 0.75);
+
+  --radius: 18px;
+  --shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--bg1), var(--bg2));
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Particle canvas */
+#particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+/* Keep content above particles */
+.site-header,
+main,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.container {
+  width: min(1000px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+/* Animated gradient header */
+.site-header {
+  padding: 64px 0 34px;
+  text-align: center;
+}
+
+.title {
+  font-family: "Press Start 2P", system-ui, sans-serif;
+  font-size: clamp(26px, 4vw, 42px);
+  margin: 0;
+  letter-spacing: 1px;
+
+  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  animation: headerGradient 4s linear infinite;
+}
+
+@keyframes headerGradient {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.subtitle {
+  margin-top: 14px;
+  font-size: 18px;
+  color: var(--muted);
+}
+
+/* Cards */
+.card {
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 20px 0;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card-header {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+h2 {
+  margin: 0;
+  font-size: 18px;
+  font-family: "Press Start 2P", system-ui, sans-serif;
+}
+
+/* Status pill */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--warning);
+  box-shadow: 0 0 10px var(--warning);
+}
+
+.status-online .dot {
+  background: var(--accent);
+  box-shadow: 0 0 14px rgba(74, 222, 128, 0.9);
+}
+
+.status-offline .dot {
+  background: var(--danger);
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.9);
+}
+
+/* Pulse glow when online */
+.status-online {
+  animation: pulseGlow 1.6s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 rgba(74, 222, 128, 0.0); }
+  50% { box-shadow: 0 0 22px rgba(74, 222, 128, 0.35); }
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.stat {
+  grid-column: span 6;
+  background: rgba(0, 0, 0, 0.26);
+  border-radius: 14px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  transition: transform 0.2s ease;
+}
+
+.stat:hover {
+  transform: scale(1.02);
+}
+
+@media (max-width: 768px) {
+  .stat {
+    grid-column: span 12;
+  }
+}
+
+.label {
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+  font-family: "Press Start 2P", system-ui, sans-serif;
+}
+
+.value {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.big {
+  font-family: "Press Start 2P", system-ui, sans-serif;
+  font-size: 28px;
+  color: var(--accent);
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 12px;
+}
+
+/* Buttons */
+.btn {
+  margin-top: 12px;
+  padding: 11px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--text);
+  background: linear-gradient(90deg, var(--accent), #16a34a);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 18px rgba(74, 222, 128, 0.35);
+}
+
+.btn:active {
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.btn-secondary:hover {
+  box-shadow: 0 10px 18px rgba(56, 189, 248, 0.22);
+}
+
+/* Header action row */
+.action-row {
+  margin-top: 18px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Discord button */
+.btn-discord {
+  background: linear-gradient(90deg, #5865f2, #7c3aed);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.btn-discord:hover {
+  box-shadow: 0 10px 18px rgba(88, 101, 242, 0.35);
+}
+
+/* Button row inside card */
+.btn-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.22);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* Daily message */
+.daily-text {
+  margin: 14px 0 0;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* Player list */
+.player-list {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.player-chip {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  font-family: "Press Start 2P", system-ui, sans-serif;
+}
+
+.player-empty {
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Misc */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+.motd-text {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+.steps {
+  margin: 14px 0 0 18px;
+  line-height: 1.9;
+}
+
+.error {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.site-footer {
+  text-align: center;
+  padding: 44px 0 56px;
+  color: var(--muted);
+}

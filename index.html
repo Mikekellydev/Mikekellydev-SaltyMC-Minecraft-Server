@@ -1,0 +1,160 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SaltyMC Server Status</title>
+    <meta
+      name="description"
+      content="Live status page for SaltyMC including online state, player count, version, MOTD, daily message, and online players when available."
+    />
+
+    <!-- Pixel font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <!-- Subtle particle background -->
+    <canvas id="particles" aria-hidden="true"></canvas>
+
+    <header class="site-header">
+      <div class="container">
+        <h1 class="title">SaltyMC</h1>
+        <p class="subtitle">Live server status and quick connect info</p>
+
+        <div class="action-row" aria-label="Quick links">
+          <button class="btn btn-discord" id="joinDiscordBtn" type="button">
+            Join Discord
+          </button>
+          <button class="btn btn-secondary" id="copyDiscordBtn" type="button">
+            Copy Discord
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- Status Card -->
+      <section class="card" aria-labelledby="status-heading">
+        <div class="card-header">
+          <h2 id="status-heading">Server Status</h2>
+
+          <div class="status-pill" id="statusPill" aria-live="polite">
+            <span class="dot" aria-hidden="true"></span>
+            <span id="statusText">Checking…</span>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="stat">
+            <div class="label">Address</div>
+            <div class="value mono" id="serverAddress">play.saltymc.org</div>
+
+            <div class="btn-row">
+              <button class="btn btn-secondary" id="copyAddressBtn" type="button">
+                Copy address
+              </button>
+            </div>
+
+            <div class="hint">Tip: Use the address above. IPs can change.</div>
+          </div>
+
+          <div class="stat">
+            <div class="label">Players</div>
+            <div class="value">
+              <span class="big" id="playersOnline">0</span>
+              <span class="muted"> / </span>
+              <span class="muted" id="playersMax">0</span>
+            </div>
+            <div class="hint" id="playersHint">Waiting for update…</div>
+          </div>
+
+          <div class="stat">
+            <div class="label">Version</div>
+            <div class="value" id="serverVersion">Unknown</div>
+            <div class="hint">Java or Bedrock supported</div>
+          </div>
+
+          <div class="stat">
+            <div class="label">Last Updated</div>
+            <div class="value mono" id="lastUpdated">—</div>
+            <div class="hint">
+              Auto refresh every <span id="refreshSeconds">30</span> seconds
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="motd">
+          <div class="label">Message of the Day</div>
+          <p class="motd-text" id="motd">—</p>
+        </div>
+
+        <p class="error" id="errorBox" role="alert" hidden></p>
+      </section>
+
+      <!-- Daily Message Card -->
+      <section class="card" aria-labelledby="daily-heading">
+        <div class="card-header">
+          <h2 id="daily-heading">Daily Message</h2>
+          <span class="badge" id="dailyBadge">Today</span>
+        </div>
+
+        <p class="daily-text" id="dailyMessage">Loading daily message…</p>
+
+        <div class="hint" id="dailyHint">
+          This message is set by the site owner and can change daily.
+        </div>
+      </section>
+
+      <!-- Online Players Card (auto hides if player list not available) -->
+      <section class="card" id="playersCard" aria-labelledby="players-heading">
+        <div class="card-header">
+          <h2 id="players-heading">Online Players</h2>
+          <span class="badge" id="playersBadge">Live</span>
+        </div>
+
+        <div class="player-list" id="playerList" aria-live="polite">
+          <p class="muted small" id="playerListStatus">Checking player list…</p>
+        </div>
+
+        <p class="small muted" id="playerListNote">
+          Player names appear only if the server shares them publicly.
+        </p>
+      </section>
+
+      <!-- How to Join Card -->
+      <section class="card" aria-labelledby="howto-heading">
+        <h2 id="howto-heading">How to Join</h2>
+        <ol class="steps">
+          <li>Open Minecraft</li>
+          <li>Go to Multiplayer</li>
+          <li>Select Add Server</li>
+          <li>Address: <span class="mono">play.saltymc.org</span></li>
+          <li>Join and have fun</li>
+        </ol>
+
+        <p class="small muted">
+          If the server shows Offline, it may be restarting. Try again in a minute.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p class="small muted">Powered by mcsrvstat.us API.</p>
+      </div>
+    </footer>
+
+    <script src="scripts.js"></script>
+  </body>
+</html>
